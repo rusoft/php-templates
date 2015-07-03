@@ -919,8 +919,7 @@ int				tag_max, tag_cur;
 }
 
 #define TMPL_SET_PARAM_BOOL(s) {										\
-	zval_dtor(s);												\
-	ZVAL_BOOL((s), Z_BVAL_PP(val));	\
+	s = Z_BVAL_PP(val);	\
 	param_set = 1;												\
 	break;														\
 }
