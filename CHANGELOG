@@ -1,3 +1,8 @@
+1.7.3:
+- fix lvalue set for php >= 4.1
+- fix compilation warnings about line numbers format
+- add new option to suppress errors if context not found
+
 1.7:
 - contexts may now be assigned a value like if they were tags
 - removed "Tag doesn't exist" notice from tmpl_set()

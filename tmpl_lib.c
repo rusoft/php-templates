@@ -112,7 +112,7 @@ register char	*start;
 		if(!(*p)) break; else nam[nam_len] = 0;
 
 		if('=' != *p) {
-			php_error(E_ERROR, "Invalid configuration tag parameter in template (line:%d)", php_tmpl_line_num(tmpl, p));
+			php_error(E_ERROR, "Invalid configuration tag parameter in template (line:%lu)", php_tmpl_line_num(tmpl, p));
 			TMPL_PRE_PARSE_CONFIG_CLEANUP;
 			return FAILURE;
 		}
@@ -125,7 +125,7 @@ register char	*start;
 		if(!(*p)) break; else val[val_len] = 0;
 
 		if(quote && quote != *p) {
-			php_error(E_ERROR, "Invalid parameter value in configuration tag in template (line:%d)", php_tmpl_line_num(tmpl, p));
+			php_error(E_ERROR, "Invalid parameter value in configuration tag in template (line:%lu)", php_tmpl_line_num(tmpl, p));
 			TMPL_PRE_PARSE_CONFIG_CLEANUP;
 			return FAILURE;
 		}
@@ -308,7 +308,7 @@ zval			**ztag;
 			buf[buf_len] = 0;
 
 			if(SUCCESS == zend_hash_find(Z_ARRVAL_P(tmpl->tags), buf, buf_len+1, (void*)&ztag)) {
-				php_error(E_ERROR, "Duplicate context \"%s\" in template (line: %d)", buf, php_tmpl_line_num(tmpl, p));
+				php_error(E_ERROR, "Duplicate context \"%s\" in template (line: %lu)", buf, php_tmpl_line_num(tmpl, p));
 				TMPL_PRE_PARSE_CLEANUP;
 				return FAILURE;
 			}
@@ -359,7 +359,7 @@ zval			**ztag;
 		}
 	}
 	if(buf_len != 1) {
-		php_error(E_ERROR, "Can't continue with an unterminated context \"%s\" in template (line:%d)", buf, php_tmpl_line_num(tmpl, ZV(tmpl->original) + context->loff));
+		php_error(E_ERROR, "Can't continue with an unterminated context \"%s\" in template (line:%lu)", buf, php_tmpl_line_num(tmpl, ZV(tmpl->original) + context->loff));
 		TMPL_PRE_PARSE_CLEANUP;
 		return FAILURE;
 	}
