@@ -237,7 +237,7 @@ char	buf[TMPL_MAX_TAG_LEN*3];
 	DISPLAY_INI_ENTRIES();
 
 	php_info_print_table_start();
-	php_info_print_table_row(2,	"WWW", "http://php-templates.sourceforge.net/");
+	php_info_print_table_row(2,	"WWW", "https://github.com/sergey-dryabzhinsky/php-templates");
 	php_info_print_table_end();
 }
 /* }}} */
