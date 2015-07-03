@@ -433,7 +433,11 @@ t_tmpl_tag	*tag;
 char		*p;
 
 	if(FAILURE == zend_hash_find(Z_ARRVAL_P(tmpl->tags), ZV(path), ZL(path)+1, (void*)&ztag)) {
-		/* php_error(E_NOTICE, "Can't set value for tag/context \"%s\" which doesn't exist", ZV(path)); */
+		if (tmpl->ctx_eno) {
+			php_error(E_NOTICE, "Can't set value for tag/context \"%s\" which doesn't exist", ZV(path));
+		} else {
+			/* php_error(E_NOTICE, "Can't set value for tag/context \"%s\" which doesn't exist", ZV(path)); */
+		}
 		return FAILURE;
 	}
 	tag = Z_TMPL_TAG(ztag);
@@ -451,8 +455,8 @@ char		*p;
 		}
 	}
 
-	convert_to_string_ex(data); 
-	MAKE_STD_ZVAL(cp_data); 
+	convert_to_string_ex(data);
+	MAKE_STD_ZVAL(cp_data);
 	ZVAL_STRINGL(cp_data, Z_STRVAL_PP(data), Z_STRLEN_PP(data), 1);
 
 	if(SUCCESS == zend_hash_find(Z_ARRVAL_PP(iteration), ZV(tag->name), ZL(tag->name)+1, (void*)&ztag)) {
@@ -556,7 +560,12 @@ zval** php_tmpl_get_iteration(t_template* tmpl, zval* path, int need_new) {
 
 	if(IS_ARRAY != Z_TYPE_PP(cur_data)) { 
 		if(TMPL_TAG == tag->typ) {
-			php_error(E_ERROR, "\"%s\" is inaccessible due to conversion of one of its parent contexts to a tag", ZV(path));
+			if (tmpl->ctx_eno) {
+				php_error(E_ERROR, "\"%s\" is inaccessible due to conversion of one of its parent contexts to a tag", ZV(path));
+			} else {
+				php_error(E_NOTICE, "\"%s\" is inaccessible due to conversion of one of its parent contexts to a tag", ZV(path));
+				return NULL;
+			}
 		} else {
 			php_error(E_ERROR, "The context \"%s\" has been converted to tag", ZV(path));
 		}
