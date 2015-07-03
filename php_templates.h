@@ -55,6 +55,7 @@ extern zend_module_entry templates_module_entry;
 #define TMPL_CTX_OR			">"
 #define TMPL_CTX_CL			"</tmpl:"
 #define TMPL_CTX_CR			">"
+#define TMPL_CTX_ENO		1
 
 #define TMPL_CONFIG_TAG_NAME	"template"
 
@@ -141,6 +142,7 @@ typedef struct _t_template {
 	ulong			config_start, config_end;			/* <template> tag position */
 	zval			*tag_left, *tag_right;				/* tag delimiters */
 	zval			*ctx_ol, *ctx_or, *ctx_cl, *ctx_cr;	/* context delimiters */
+	uchar			ctx_eno;		/* throw error if context block not found */
 	zval			*tags;			/* sd (single dimensioned) array : tags[path] = (t_tmpl_tag*) */
 	zval			*original;		/* string  : original template content */
 	zval			*path;			/* string : current path */
@@ -195,6 +197,7 @@ ZEND_BEGIN_MODULE_GLOBALS(templates)
 	char	*left, *right;
 	char	*ctx_ol, *ctx_or;
 	char	*ctx_cl, *ctx_cr;
+	uchar	ctx_eno;
 	zval	*tmpl_param;
 ZEND_END_MODULE_GLOBALS(templates)
 
