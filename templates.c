@@ -48,7 +48,7 @@ extern PHPAPI int php_sock_close(int socket);
 int		le_templates;
 
 /* {{{ templates_functions[] */
-function_entry templates_functions[] = {
+zend_function_entry templates_functions[] = {
 	PHP_FE(tmpl_open,		NULL)
 	PHP_FE(tmpl_load,		NULL)
 	PHP_FE(tmpl_close,		NULL)
