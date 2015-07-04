@@ -1,3 +1,6 @@
+1.7.4:
+- use new zend_parse_parameters API for php >= 4.1
+
 1.7.3:
 - fix lvalue set for php >= 4.1
 - fix compilation warnings about line numbers format

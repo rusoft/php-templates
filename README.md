@@ -17,7 +17,7 @@ Installation
 From inside the repository:
 ```
 $ phpize
-$ ./configure --enable-templates=shared
+$ ./configure --enable-templates=shared --with-php-config=`which php-config`
 $ make
 $ make install
 ```
