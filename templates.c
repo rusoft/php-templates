@@ -885,7 +885,7 @@ PHP_FUNCTION(tmpl_get) {
 #ifdef TMPL_PHP_4_1
 	TMPL_GET_RESOURCE(tmpl, &id);
 	if(2 == ZEND_NUM_ARGS()) {
-	} else path = tmpl->path;
+	} else path = Z_STRVAL_P(tmpl->path);
 #else
 	TMPL_GET_RESOURCE(tmpl, id);
 	if(2 == ZEND_NUM_ARGS()) {
