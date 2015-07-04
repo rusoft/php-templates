@@ -270,7 +270,7 @@ PHP_FUNCTION(tmpl_open) {
 
 #ifdef TMPL_PHP_4_1
 	if(!(ZEND_NUM_ARGS() == 2 && zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sa", &filename, &filename_len, &delimiters) == SUCCESS)
-	&& !(ZEND_NUM_ARGS() == 1 && zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filename, &filenme_len) == SUCCESS)) {
+	&& !(ZEND_NUM_ARGS() == 1 && zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filename, &filename_len) == SUCCESS)) {
 #else
 	if(!(ZEND_NUM_ARGS() == 2 && zend_get_parameters_ex(2, &filename, &delimiters) == SUCCESS && Z_TYPE_PP(delimiters) == IS_ARRAY)
 	&& !(ZEND_NUM_ARGS() == 1 && zend_get_parameters_ex(1, &filename) == SUCCESS)) {
@@ -285,10 +285,8 @@ PHP_FUNCTION(tmpl_open) {
 #ifndef TMPL_PHP_4_1
 	/* load template */
 	convert_to_string_ex(filename);
-#endif
 
 	/* check for open base_dir restrictions */
-#ifndef TMPL_PHP_4_1
 	if (php_check_open_basedir(Z_STRVAL_PP(filename) TSRMLS_CC)) {
 #else
 	if (php_check_open_basedir(filename TSRMLS_CC)) {
@@ -476,8 +474,8 @@ PHP_FUNCTION(tmpl_set) {
 	} else if(3 == ZEND_NUM_ARGS() && SUCCESS == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rza", &id, &arg1, &arg2)) {
 #else
 	} else if(3 == ZEND_NUM_ARGS() && SUCCESS == zend_get_parameters_ex(3, &id, &arg1, &arg2)) {
-#endif
 		convert_to_string_ex(arg1); 
+#endif
 		TMPL_GET_RESOURCE(tmpl, id);
 
 		MAKE_STD_ZVAL(path); ZVAL_EMPTY_STRING(path);
