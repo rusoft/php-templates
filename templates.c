@@ -263,8 +263,8 @@ PHP_FUNCTION(tmpl_open) {
 #endif
 
 #ifdef TMPL_PHP_4_1
-	if(!(ZEND_NUM_ARGS() == 2 && zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "za", &filename, &delimiters) == SUCCESS && Z_TYPE_PP(delimiters) == IS_ARRAY)
-	&& !(ZEND_NUM_ARGS() == 1 && zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &filename) == SUCCESS)) {
+	if(!(ZEND_NUM_ARGS() == 2 && zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sa", &filename, &delimiters) == SUCCESS && Z_TYPE_PP(delimiters) == IS_ARRAY)
+	&& !(ZEND_NUM_ARGS() == 1 && zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filename) == SUCCESS)) {
 #else
 	if(!(ZEND_NUM_ARGS() == 2 && zend_get_parameters_ex(2, &filename, &delimiters) == SUCCESS && Z_TYPE_PP(delimiters) == IS_ARRAY)
 	&& !(ZEND_NUM_ARGS() == 1 && zend_get_parameters_ex(1, &filename) == SUCCESS)) {
@@ -852,8 +852,8 @@ PHP_FUNCTION(tmpl_unset) {
 
 	if(
 #ifdef TMPL_PHP_4_1
-		(2 != ZEND_NUM_ARGS() || FAILURE == zend_get_parameters_ex(ZEND_NUM_ARGS() TSRMLS_CC, "rz", &id, &path)) &&
-		(1 != ZEND_NUM_ARGS() || FAILURE == zend_get_parameters_ex(ZEND_NUM_ARGS() TSRMLS_CC, "r", &id))
+		(2 != ZEND_NUM_ARGS() || FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rz", &id, &path)) &&
+		(1 != ZEND_NUM_ARGS() || FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &id))
 #else
 		(2 != ZEND_NUM_ARGS() || FAILURE == zend_get_parameters_ex(2, &id, &path)) &&
 		(1 != ZEND_NUM_ARGS() || FAILURE == zend_get_parameters_ex(1, &id))
