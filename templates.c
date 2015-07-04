@@ -734,18 +734,24 @@ PHP_FUNCTION(tmpl_iterate) {
 /* {{{ proto bool tmpl_close(int id)
    Close template and free its resources */
 PHP_FUNCTION(tmpl_close) {
+#ifdef TMPL_PHP_4_1
+	zval		*id;
+
+	if(ZEND_NUM_ARGS() != 1 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &id) != SUCCESS) {
+#else
 	zval		**id;
 
-#ifdef TMPL_PHP_4_1
-	if(ZEND_NUM_ARGS() != 1 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &id) != SUCCESS || IS_RESOURCE != Z_TYPE_PP(id)) {
-#else
 	if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &id) != SUCCESS || IS_RESOURCE != Z_TYPE_PP(id)) {
 #endif
 		WRONG_PARAM_COUNT;
 		RETURN_FALSE;
 	}
 
+#ifdef TMPL_PHP_4_1
+	if(zend_list_delete(Z_LVAL_PP(&id)) == FAILURE) {
+#else
 	if(zend_list_delete(Z_LVAL_PP(id)) == FAILURE) {
+#endif
 		RETURN_FALSE;
 	}
 
@@ -756,12 +762,18 @@ PHP_FUNCTION(tmpl_close) {
 /* {{{ proto string tmpl_context(int id [, string context])
    Set and/or return current context */
 PHP_FUNCTION(tmpl_context) {
+#ifndef TMPL_PHP_4_1
 	zval		**id, **path;
+#else
+	zval		*id;
+	char		*path;
+	int			path_len;
+#endif
 	zval		*real_path, **ztag;
 	t_template	*tmpl;
 
 #ifdef TMPL_PHP_4_1
-	if(!(ZEND_NUM_ARGS() == 2 && zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rz", &id, &path) == SUCCESS)
+	if(!(ZEND_NUM_ARGS() == 2 && zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &id, &path, &path_len) == SUCCESS)
 	&& !(ZEND_NUM_ARGS() == 1 && zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &id) == SUCCESS)) {
 #else
 	if(!(ZEND_NUM_ARGS() == 2 && zend_get_parameters_ex(2, &id, &path) == SUCCESS)
@@ -771,13 +783,20 @@ PHP_FUNCTION(tmpl_context) {
 		RETURN_FALSE;
 	}
 
+#ifdef TMPL_PHP_4_1
+	TMPL_GET_RESOURCE(tmpl, &id);
+#else
 	TMPL_GET_RESOURCE(tmpl, id);
+#endif
 
 	if(2 == ZEND_NUM_ARGS()) {
-		convert_to_string_ex(path);
-
 		MAKE_STD_ZVAL(real_path); ZVAL_EMPTY_STRING(real_path);
+#ifdef TMPL_PHP_4_1
+		php_tmpl_load_path(&real_path, path, path_len, tmpl->path);
+#else
+		convert_to_string_ex(path);
 		php_tmpl_load_path(&real_path, Z_STRVAL_PP(path), Z_STRLEN_PP(path), tmpl->path);
+#endif
 
 		if(FAILURE == zend_hash_find(Z_ARRVAL_P(tmpl->tags), ZV(real_path), ZL(real_path)+1, (void*)&ztag)) {
 			zval_dtor(real_path); FREE_ZVAL(real_path);
@@ -797,12 +816,18 @@ PHP_FUNCTION(tmpl_context) {
 /* {{{ proto long tmpl_type_of(int id, string path)
    Returns the type of an element or 0 if it doesn't exist */
 PHP_FUNCTION(tmpl_type_of) {
+#ifndef TMPL_PHP_4_1
 	zval		**id, **path;
+#else
+	zval		*id;
+	char		*path;
+	int			path_len;
+#endif
 	zval		*real_path, **ztag;
 	t_template	*tmpl;
 
 #ifdef TMPL_PHP_4_1
-	if(!(2 == ZEND_NUM_ARGS() && SUCCESS == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rz", &id, &path))) {
+	if(!(2 == ZEND_NUM_ARGS() && SUCCESS == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &id, &path, &path_len))) {
 #else
 	if(!(2 == ZEND_NUM_ARGS() && SUCCESS == zend_get_parameters_ex(2, &id, &path))) {
 #endif
@@ -810,13 +835,21 @@ PHP_FUNCTION(tmpl_type_of) {
 		RETURN_FALSE;
 	}
 
+#ifdef TMPL_PHP_4_1
+	TMPL_GET_RESOURCE(tmpl, &id);
+#else
 	TMPL_GET_RESOURCE(tmpl, id);
 	convert_to_string_ex(path);
+#endif
 
 	RETVAL_LONG(TMPL_UNDEFINED);
 	MAKE_STD_ZVAL(real_path); ZVAL_EMPTY_STRING(real_path);
 
+#ifdef TMPL_PHP_4_1
+	php_tmpl_load_path(&real_path, path, path_len, tmpl->path);
+#else
 	php_tmpl_load_path(&real_path, Z_STRVAL_PP(path), Z_STRLEN_PP(path), tmpl->path);
+#endif
 	if(SUCCESS == zend_hash_find(Z_ARRVAL_P(tmpl->tags), ZV(real_path), ZL(real_path)+1, (void*)&ztag)) {
 		RETVAL_LONG(((t_tmpl_tag*)Z_STRVAL_PP(ztag))->typ);
 	}
