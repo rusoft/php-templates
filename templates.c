@@ -932,7 +932,15 @@ PHP_FUNCTION(tmpl_get) {
 /* {{{ proto array tmpl_structure(int id [, string path [, long mask [, long mod]]])
    Returns the structure of tags and contexts in the temlpate */
 PHP_FUNCTION(tmpl_structure) {
+#ifndef TMPL_PHP_4_1
 	zval		**id, **path, **mask, **mod;
+#else
+	zval		*id;
+	char		*path;
+	int			path_len;
+	long		mask;
+	long		mod;
+#endif
 	zval		*result, *real_path;
 	long		typ_mask;
 	int			typ_mod;
@@ -943,7 +951,7 @@ PHP_FUNCTION(tmpl_structure) {
 
 	if(
 #ifdef TMPL_PHP_4_1
-		FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r|zzz", &id, &path, &mask, &mod)
+		FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r|sll", &id, &path, &path_len, &mask, &mod)
 #else
 		(4 != ZEND_NUM_ARGS() || FAILURE == zend_get_parameters_ex(4, &id, &path, &mask, &mod)) &&
 		(3 != ZEND_NUM_ARGS() || FAILURE == zend_get_parameters_ex(3, &id, &path, &mask)) &&
@@ -956,6 +964,7 @@ PHP_FUNCTION(tmpl_structure) {
 		RETURN_FALSE;
 	}
 
+#ifdef TMPL_PHP_4_1
 	TMPL_GET_RESOURCE(tmpl, id);
 	if(ZEND_NUM_ARGS() > 1) {
 		convert_to_string_ex(path);
@@ -969,6 +978,18 @@ PHP_FUNCTION(tmpl_structure) {
 		convert_to_long_ex(mod);
 		typ_mod = Z_LVAL_PP(mod) & (TMPL_LONG | TMPL_SHORT | TMPL_TREE);
 	}
+#else
+	TMPL_GET_RESOURCE(tmpl, &id);
+	if(ZEND_NUM_ARGS() > 1) {
+		php_tmpl_load_path(&real_path, path, path_len, tmpl->path);
+	}
+	if(ZEND_NUM_ARGS() > 2) {
+		typ_mask = mask & (TMPL_TAG | TMPL_CONTEXT);
+	}
+	if(ZEND_NUM_ARGS() > 3) {
+		typ_mod = mod & (TMPL_LONG | TMPL_SHORT | TMPL_TREE);
+	}
+#endif
 
 	if(!ZL(real_path)) {
 		zval_dtor(real_path);
