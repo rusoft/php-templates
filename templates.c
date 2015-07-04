@@ -547,11 +547,9 @@ PHP_FUNCTION(tmpl_set_global) {
 #ifndef TMPL_PHP_4_1
 	zval		**id, **arg1, **arg2;
 #else
-	zval		*id;
+	zval		*id, *arg2;
 	char *arg1;
 	int arg1_len;
-	char *arg2;
-	int arg2_len;
 #endif
 	zval		*path;
 	t_template	*tmpl;
@@ -564,7 +562,7 @@ PHP_FUNCTION(tmpl_set_global) {
 
 	RETVAL_FALSE;
 #ifdef TMPL_PHP_4_1
-	if(3 != ZEND_NUM_ARGS() || SUCCESS != zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &id, &arg1, &arg1_len, &arg2, &arg2_len)) {
+	if(3 != ZEND_NUM_ARGS() || SUCCESS != zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsz", &id, &arg1, &arg1_len, &arg2)) {
 #else
 	if(3 != ZEND_NUM_ARGS() || SUCCESS != zend_get_parameters_ex(3, &id, &arg1, &arg2)) {
 #endif
@@ -574,7 +572,8 @@ PHP_FUNCTION(tmpl_set_global) {
 
 #ifndef TMPL_PHP_4_1
 	convert_to_string_ex(arg1);
-	convert_to_string_ex(arg2);
+//	WTF?
+//	convert_to_string_ex(arg2);
 	TMPL_GET_RESOURCE(tmpl, id);
 #else
 	TMPL_GET_RESOURCE(tmpl, &id);
@@ -886,12 +885,13 @@ PHP_FUNCTION(tmpl_get) {
 #ifdef TMPL_PHP_4_1
 	TMPL_GET_RESOURCE(tmpl, &id);
 	if(2 == ZEND_NUM_ARGS()) {
+	} else path = tmpl->path;
 #else
 	TMPL_GET_RESOURCE(tmpl, id);
 	if(2 == ZEND_NUM_ARGS()) {
 		convert_to_string_ex(path);
-#endif
 	} else path = &tmpl->path;
+#endif
 	RETVAL_FALSE;
 
 	MAKE_STD_ZVAL(real_path); ZVAL_EMPTY_STRING(real_path);
@@ -995,7 +995,13 @@ PHP_FUNCTION(tmpl_structure) {
 /* {{{ proto bool tmpl_unset(int id [, string path])
    Unsets context */
 PHP_FUNCTION(tmpl_unset) {
+#ifndef TMPL_PHP_4_1
 	zval		**id, **path;
+#else
+	zval		*id;
+	char		*path;
+	int			path_len;
+#endif
 	zval		*real_path, *parent_path;
 	t_template	*tmpl;
 	zval		**iteration;
@@ -1005,7 +1011,7 @@ PHP_FUNCTION(tmpl_unset) {
 
 	if(
 #ifdef TMPL_PHP_4_1
-		FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r|z", &id, &path)
+		FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r|s", &id, &path, &path_len)
 #else
 		(2 != ZEND_NUM_ARGS() || FAILURE == zend_get_parameters_ex(2, &id, &path)) &&
 		(1 != ZEND_NUM_ARGS() || FAILURE == zend_get_parameters_ex(1, &id))
@@ -1016,11 +1022,19 @@ PHP_FUNCTION(tmpl_unset) {
 		RETURN_FALSE;
 	}
 
+#ifndef TMPL_PHP_4_1
 	TMPL_GET_RESOURCE(tmpl, id);
+#else
+	TMPL_GET_RESOURCE(tmpl, &id);
+#endif
 
 	if(2 == ZEND_NUM_ARGS()) {
+#ifndef TMPL_PHP_4_1
 		convert_to_string_ex(path);
 		php_tmpl_load_path(&real_path, Z_STRVAL_PP(path), Z_STRLEN_PP(path), tmpl->path);
+#else
+		php_tmpl_load_path(&real_path, path, path_len, tmpl->path);
+#endif
 	} else {
 		zval_dtor(real_path);
 		ZVAL_STRINGL(real_path, ZV(tmpl->path), ZL(tmpl->path), 1);
