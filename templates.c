@@ -964,7 +964,7 @@ PHP_FUNCTION(tmpl_structure) {
 		RETURN_FALSE;
 	}
 
-#ifdef TMPL_PHP_4_1
+#ifndef TMPL_PHP_4_1
 	TMPL_GET_RESOURCE(tmpl, id);
 	if(ZEND_NUM_ARGS() > 1) {
 		convert_to_string_ex(path);
