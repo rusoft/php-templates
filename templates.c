@@ -478,11 +478,12 @@ PHP_FUNCTION(tmpl_set) {
 
 #ifdef TMPL_PHP_4_1
 	} else if(3 == ZEND_NUM_ARGS() && SUCCESS == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsz", &id, &arg1, &arg1_len, &arg2)) {
+		TMPL_GET_RESOURCE(tmpl, &id);
 #else
 	} else if(3 == ZEND_NUM_ARGS() && SUCCESS == zend_get_parameters_ex(3, &id, &arg1, &arg2)) {
 		convert_to_string_ex(arg1);
-#endif
 		TMPL_GET_RESOURCE(tmpl, id);
+#endif
 
 		MAKE_STD_ZVAL(path); ZVAL_EMPTY_STRING(path);
 
@@ -618,7 +619,7 @@ PHP_FUNCTION(tmpl_set_global) {
 /* {{{ proto string tmpl_parse(int id)
    Parse template and return template's content */
 PHP_FUNCTION(tmpl_parse) {
-#ifdef TMPL_PHP_4_1
+#ifndef TMPL_PHP_4_1
 	zval			**id, **arg1;
 #else
 	zval			*id;
