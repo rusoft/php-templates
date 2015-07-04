@@ -642,7 +642,7 @@ PHP_FUNCTION(tmpl_parse) {
 #endif
 
 		MAKE_STD_ZVAL(path); ZVAL_EMPTY_STRING(path);
-#ifdef TMPL_PHP_4_1
+#ifndef TMPL_PHP_4_1
 		php_tmpl_load_path(&path, Z_STRVAL_PP(arg1), Z_STRLEN_PP(arg1), tmpl->path);
 #else
 		php_tmpl_load_path(&path, arg1, arg1_len, tmpl->path);
