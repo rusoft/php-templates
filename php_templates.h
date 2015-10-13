@@ -44,7 +44,7 @@ extern zend_module_entry templates_module_entry;
 #	define TMPL_PHP_4_3		1
 #endif
 
-#define TMPL_VERSION		"1.7.3"
+#define TMPL_VERSION		"1.7.3.1"
 
 #define TMPL_CACHE_ENABLED	0
 
@@ -55,7 +55,7 @@ extern zend_module_entry templates_module_entry;
 #define TMPL_CTX_OR			">"
 #define TMPL_CTX_CL			"</tmpl:"
 #define TMPL_CTX_CR			">"
-#define TMPL_CTX_ENO		1
+#define TMPL_CTX_ENO		"1"
 
 #define TMPL_CONFIG_TAG_NAME	"template"
 
